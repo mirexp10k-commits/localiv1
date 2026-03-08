@@ -1,0 +1,16 @@
+{
+  "name": "sistema-geolocalizacao-silenciosa",
+  "version": "1.0.0",
+  "description": "Sistema de captura de leads com rastreamento silencioso e painel admin",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
